@@ -1,7 +1,7 @@
 # published as ghcr.io/crashappsec/nim:latest
 # published as ghcr.io/crashappsec/nim:$NIM_VERSION
 
-FROM ubuntu:jammy-20230126 AS compile-nim
+FROM ubuntu:jammy-20230126
 ARG NIM_VERSION=1.6.10
 ARG NIMBLE_VERSION=0.14.0
 
