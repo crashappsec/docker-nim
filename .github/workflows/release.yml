@@ -6,13 +6,23 @@ on:
       NIM_VERSION:
         description: "nim version"
         required: true
-        default: "1.6.10"
+        default: "1.6.12"
         type: string
       NIMBLE_VERSION:
         description: "nimble version"
         required: true
         default: "0.14.0"
         type: string
+      BASE:
+        type: choice
+        description: "whether the base image should be alpine or ubuntu"
+        options:
+          - alpine
+          - ubuntu
+        message:
+          required: true
+        required: true
+        default: "ubuntu"
 
 permissions:
   packages: write
@@ -56,7 +66,7 @@ jobs:
       - name: Build and Push Docker Image
         uses: docker/build-push-action@v4
         with:
-          file: Dockerfile
+          file: Dockerfile.${{ inputs.BASE }}
           push: true
           provenance: false # https://github.com/docker/buildx/issues/1608
           platforms: linux/${{ matrix.platform }}
@@ -64,8 +74,8 @@ jobs:
             NIM_VERSION=${{ inputs.NIM_VERSION }}
             NIMBLE_VERSION=${{ inputs.NIMBLE_VERSION }}
           tags: |
-            ghcr.io/${{ github.repository_owner }}/nim:latest-${{ matrix.platform }}
-            ghcr.io/${{ github.repository_owner }}/nim:${{ inputs.NIM_VERSION }}-${{ matrix.platform }}
+            ghcr.io/${{ github.repository_owner }}/nim-{{ inputs.BASE }}:latest-${{ matrix.platform }}
+            ghcr.io/${{ github.repository_owner }}/nim-{{ inputs.BASE }}:${{ inputs.NIM_VERSION }}-${{ matrix.platform }}
 
   manifest:
     runs-on: ubuntu-latest
@@ -82,13 +92,13 @@ jobs:
       - name: Create and push manifest images for latest
         uses: Noelware/docker-manifest-action@0.3.1
         with:
-          inputs: ghcr.io/${{ github.repository_owner }}/nim:latest
-          images: ghcr.io/${{ github.repository_owner }}/nim:latest-amd64,ghcr.io/${{ github.repository_owner }}/nim:latest-arm64
+          inputs: ghcr.io/${{ github.repository_owner }}/nim-{{ inputs.BASE }}:latest
+          images: ghcr.io/${{ github.repository_owner }}/nim-{{ inputs.BASE }}:latest-amd64,ghcr.io/${{ github.repository_owner }}/nim-{{ inputs.BASE }}:latest-arm64
           push: true
 
       - name: Create and push manifest images for specific version
         uses: Noelware/docker-manifest-action@0.3.1
         with:
-          inputs: ghcr.io/${{ github.repository_owner }}/nim:${{ inputs.NIM_VERSION }}
-          images: ghcr.io/${{ github.repository_owner }}/nim:${{ inputs.NIM_VERSION }}-amd64,ghcr.io/${{ github.repository_owner }}/nim:${{ inputs.NIM_VERSION }}-arm64
+          inputs: ghcr.io/${{ github.repository_owner }}/nim-{{ inputs.BASE }}:${{ inputs.NIM_VERSION }}
+          images: ghcr.io/${{ github.repository_owner }}/nim-{{ inputs.BASE }}:${{ inputs.NIM_VERSION }}-amd64,ghcr.io/${{ github.repository_owner }}/nim-{{ inputs.BASE }}:${{ inputs.NIM_VERSION }}-arm64
           push: true
