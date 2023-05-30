@@ -95,6 +95,7 @@ jobs:
           inputs: ghcr.io/${{ github.repository_owner }}/nim:${{ inputs.BASE }}-latest
           images: ghcr.io/${{ github.repository_owner }}/nim:${{ inputs.BASE }}-latest-amd64,ghcr.io/${{ github.repository_owner }}/nim:${{ inputs.BASE }}-latest-arm64
           push: true
+          amend: true
 
       - name: Create and push manifest images for specific version
         uses: Noelware/docker-manifest-action@0.3.1
@@ -102,3 +103,4 @@ jobs:
           inputs: ghcr.io/${{ github.repository_owner }}/nim:${{ inputs.BASE }}-${{ inputs.NIM_VERSION }}
           images: ghcr.io/${{ github.repository_owner }}/nim:${{ inputs.BASE }}-${{ inputs.NIM_VERSION }}-amd64,ghcr.io/${{ github.repository_owner }}/nim:${{ inputs.BASE }}-${{ inputs.NIM_VERSION }}-arm64
           push: true
+          amend: true
