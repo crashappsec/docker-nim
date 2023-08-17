@@ -20,7 +20,7 @@ RUN bin/nim c koch
 RUN ./koch boot -d:release
 RUN ./koch tools
 
-ENV PATH /src/nim-$NIM_VERSION/bin:$PATH
+ENV PATH=:/src/nim-$NIM_VERSION/bin:$PATH
 RUN bin/nimble install nimble@$NIMBLE_VERSION -y
 
 RUN /bin/sh install.sh /opt

@@ -17,4 +17,4 @@ RUN cd /opt \
     && ./koch tools \
     && rm -r nimcache c_code ../nim-$NIM_VERSION.tar.xz
 
-ENV PATH="/opt/nim/bin:${PATH}"
+ENV PATH=/root/.nimble/bin:/opt/nim/bin:$PATH
