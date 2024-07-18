@@ -6,7 +6,8 @@ ARG NIM_VERSION=1.6.12
 ARG NIMBLE_VERSION=0.14.0
 
 RUN apt-get update && \
-        apt-get install -y gcc curl tar xz-utils git
+        apt-get install -y gcc curl tar xz-utils git && \
+        rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /src && \
         cd src && \
