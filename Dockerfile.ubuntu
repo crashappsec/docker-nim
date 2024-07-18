@@ -11,16 +11,18 @@ RUN apt-get update && \
 RUN mkdir -p /src && \
         cd src && \
         curl -o /src/nim-$NIM_VERSION.tar.xz -sSf https://nim-lang.org/download/nim-$NIM_VERSION.tar.xz && \
-        tar xJf nim-$NIM_VERSION.tar.xz
+        tar xJf nim-$NIM_VERSION.tar.xz && \
+        cd nim-$NIM_VERSION && \
+        /bin/sh build.sh && \
+        bin/nim c koch && \
+        ./koch boot -d:release && \
+        ./koch tools && \
+        rm -rf c_code/ compiler/nim compiler/nim1 nimcache/ ../nim-$NIM_VERSION.tar.xz /root/.cache/
 
 WORKDIR /src/nim-$NIM_VERSION
 
-RUN /bin/sh build.sh
-RUN bin/nim c koch
-RUN ./koch boot -d:release
-RUN ./koch tools
-
 ENV PATH=/root/.nimble/bin:/src/nim-$NIM_VERSION/bin:$PATH
-RUN bin/nimble install nimble@$NIMBLE_VERSION -y
+RUN bin/nimble install nimble@$NIMBLE_VERSION -y && \
+        rm -rf /root/.cache/
 
 RUN /bin/sh install.sh /opt
