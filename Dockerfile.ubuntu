@@ -23,7 +23,9 @@ RUN mkdir -p /src && \
 WORKDIR /src/nim-$NIM_VERSION
 
 ENV PATH=/root/.nimble/bin:/src/nim-$NIM_VERSION/bin:$PATH
-RUN bin/nimble install nimble@$NIMBLE_VERSION -y && \
+# Allow installing a different Nimble version to that defined by the Nim release.
+RUN [ "${NIMBLE_VERSION}" != 'bundled' ] && \
+        bin/nimble install nimble@$NIMBLE_VERSION -y && \
         rm -rf /root/.cache/
 
 RUN /bin/sh install.sh /opt
