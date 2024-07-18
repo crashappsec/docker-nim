@@ -1,7 +1,7 @@
 # published as ghcr.io/crashappsec/nim-alpine:latest
 # published as ghcr.io/crashappsec/nim-alpine:$NIM_VERSION
 
-FROM alpine:latest as builder
+FROM alpine:3.20.1 as builder
 ARG NIM_VERSION=1.6.12
 ARG NIMBLE_VERSION=0.14.0
 
