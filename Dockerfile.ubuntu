@@ -1,26 +1,34 @@
 # published as ghcr.io/crashappsec/nim-ubuntu:latest
 # published as ghcr.io/crashappsec/nim-ubuntu:$NIM_VERSION
 
-FROM ubuntu:jammy-20230126
+FROM ubuntu:noble-20240605
 ARG NIM_VERSION=1.6.12
 ARG NIMBLE_VERSION=0.14.0
 
 RUN apt-get update && \
-        apt-get install -y gcc curl tar xz-utils git
+        apt-get install -y gcc curl tar xz-utils git && \
+        rm -rf /var/lib/apt/lists/*
 
 RUN mkdir -p /src && \
         cd src && \
         curl -o /src/nim-$NIM_VERSION.tar.xz -sSf https://nim-lang.org/download/nim-$NIM_VERSION.tar.xz && \
-        tar xJf nim-$NIM_VERSION.tar.xz
+        tar xJf nim-$NIM_VERSION.tar.xz && \
+        cd nim-$NIM_VERSION && \
+        /bin/sh build.sh && \
+        bin/nim c koch && \
+        ./koch boot -d:release && \
+        ./koch tools && \
+        rm -rf c_code/ compiler/nim compiler/nim1 nimcache/ ../nim-$NIM_VERSION.tar.xz /root/.cache/
 
 WORKDIR /src/nim-$NIM_VERSION
 
-RUN /bin/sh build.sh
-RUN bin/nim c koch
-RUN ./koch boot -d:release
-RUN ./koch tools
-
 ENV PATH=/root/.nimble/bin:/src/nim-$NIM_VERSION/bin:$PATH
-RUN bin/nimble install nimble@$NIMBLE_VERSION -y
+# Allow installing a different Nimble version to that defined by the Nim release.
+RUN if [ "${NIMBLE_VERSION}" = 'bundled' ]; then \
+        mkdir -p /root/.nimble/bin/ ;\
+      else \
+        bin/nimble install nimble@$NIMBLE_VERSION -y && \
+        rm -rf /root/.cache/ ;\
+      fi
 
 RUN /bin/sh install.sh /opt
